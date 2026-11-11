@@ -20,15 +20,22 @@ export default function RiskCalculator() {
     const l = Number(lot);
 
     const distance = Math.abs(e - s);
-    const budget = b * r / 100;
+    const budget = (b * r) / 100;
     const loss = distance * c * l;
-    const suggestedLot =
-      distance > 0 && c > 0 ? budget / (distance * c) : 0;
 
     const valid =
       [b, r, e, s, c, l].every(Number.isFinite) &&
-      b > 0 && r > 0 && c > 0 && l > 0 &&
-      e > 0 && s > 0 && distance > 0;
+      b > 0 &&
+      r > 0 &&
+      r <= 100 &&
+      e > 0 &&
+      s > 0 &&
+      c > 0 &&
+      l > 0 &&
+      distance > 0;
+
+    const suggestedLot =
+      distance > 0 && c > 0 ? budget / (distance * c) : 0;
 
     const minimumLotLoss = distance * c * 0.01;
 
@@ -40,8 +47,7 @@ export default function RiskCalculator() {
       minimumLotLoss,
       valid,
       tooRisky: valid && loss > budget,
-      minimumLotTooRisky:
-        valid && minimumLotLoss > budget
+      minimumLotTooRisky: valid && minimumLotLoss > budget,
     };
   }, [balance, riskPct, entry, stop, contract, lot]);
 
@@ -58,7 +64,7 @@ export default function RiskCalculator() {
         inputMode="decimal"
         step={step}
         value={value}
-        onChange={e => setter(e.target.value)}
+        onChange={(e) => setter(e.target.value)}
       />
     </label>
   );
@@ -77,7 +83,9 @@ export default function RiskCalculator() {
       <div className="results">
         <div>
           <small>Risk budget</small>
-          <strong>${result.valid ? result.budget.toFixed(2) : "—"}</strong>
+          <strong>
+            ${result.valid ? result.budget.toFixed(2) : "—"}
+          </strong>
         </div>
 
         <div>
@@ -103,7 +111,10 @@ export default function RiskCalculator() {
       </div>
 
       {result.valid && result.tooRisky && (
-        <div className="notice" style={{ color: "#ef4444", fontWeight: "bold" }}>
+        <div
+          className="notice"
+          style={{ color: "#ef4444", fontWeight: "bold" }}
+        >
           ⚠ TRADE NOT SAFE — SKIP TRADE.
           <br />
           Estimated loss is higher than your risk budget.
@@ -113,7 +124,10 @@ export default function RiskCalculator() {
       )}
 
       {result.valid && !result.tooRisky && (
-        <div className="notice" style={{ color: "#16a34a", fontWeight: "bold" }}>
+        <div
+          className="notice"
+          style={{ color: "#16a34a", fontWeight: "bold" }}
+        >
           Risk is within your selected budget.
           <br />
           This is not a guarantee that the trade is safe or profitable.
@@ -121,21 +135,25 @@ export default function RiskCalculator() {
       )}
 
       {result.valid && result.minimumLotTooRisky && (
-        <div className="notice" style={{ color: "#ef4444", fontWeight: "bold" }}>
+        <div
+          className="notice"
+          style={{ color: "#ef4444", fontWeight: "bold" }}
+        >
           ⚠ MINIMUM LOT 0.01 IS ALSO TOO RISKY.
           <br />
-          Minimum lot estimated loss: ${result.minimumLotLoss.toFixed(2)}
+          Minimum lot estimated loss: $
+          {result.minimumLotLoss.toFixed(2)}
           <br />
           SKIP TRADE — Do not force a trade.
         </div>
       )}
 
       <p className="notice">
-        Important: Contract size must match your broker's XAU/USD
+        Important: Contract size must match your broker's instrument
         specification. This estimate excludes spread, commission,
         swaps, slippage and execution differences. Verify all values
         before placing a trade. It is not a trading signal.
       </p>
     </div>
   );
-               }
+        }
