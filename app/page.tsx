@@ -51,8 +51,8 @@ export default function Home() {
 
   const metrics = [
     { label: "Market", value: "XAU / USD", note: "Gold vs US Dollar" },
-    { label: "Timeframe", value: "5 min", note: "Illustrative setting" },
-    { label: "Trend status", value: "Awaiting data", note: "Candles not connected" }
+    { label: "Timeframe", value: "5 min", note: "TradingView chart" },
+    { label: "Trend status", value: "Chart connected", note: "Visual market data" }
   ];
 
   return (
@@ -113,28 +113,30 @@ export default function Home() {
         <article className="panel chart-panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">PRICE OVERVIEW</p>
-              <h2>Gold market chart</h2>
+              <p className="eyebrow">LIVE MARKET CHART</p>
+              <h2>Gold 5-minute chart</h2>
             </div>
-            <span className="tag">CHART PENDING</span>
+            <span className="tag">TRADINGVIEW</span>
           </div>
-          <div className="chart-placeholder">
-            <div className="chart-lines">
-              <span /><span /><span /><span />
-            </div>
-            <svg viewBox="0 0 700 230" role="img"
-              aria-label="Illustrative chart placeholder">
-              <polyline
-                points="0,170 55,150 100,165 150,115 205,130 260,75 315,105 370,65 425,92 480,45 535,75 590,32 645,52 700,18"
-                fill="none"
-                stroke="#d7aa54"
-                strokeWidth="3"
-              />
-            </svg>
-            <div className="chart-label">
-              Live spot price connected. Historical candles are not connected yet.
-            </div>
+
+          <div style={{ width: "100%", height: "480px", overflow: "hidden" }}>
+            <iframe
+              title="XAU USD Gold Live Chart"
+              src="https://s.tradingview.com/widgetembed/?symbol=OANDA%3AXAUUSD&interval=5&hidesidetoolbar=0&symboledit=1&saveimage=0&theme=dark&style=1&timezone=Etc%2FUTC&withdateranges=1&hideideas=1&locale=en"
+              style={{
+                width: "100%",
+                height: "100%",
+                border: "0"
+              }}
+              allowFullScreen
+              loading="lazy"
+            />
           </div>
+
+          <p className="notice">
+            TradingView chart data may differ from Exness prices.
+            This chart is for market observation, not a trading signal.
+          </p>
         </article>
 
         <article className="panel analysis-panel">
@@ -157,7 +159,7 @@ export default function Home() {
             <b>Not calculated</b>
           </div>
           <p className="notice">
-            Live spot price does not provide historical candles.
+            Technical indicators are not connected yet.
             No buy/sell signal is being issued.
           </p>
         </article>
@@ -179,4 +181,4 @@ export default function Home() {
       </footer>
     </main>
   );
-}
+      }
