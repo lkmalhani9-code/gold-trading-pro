@@ -30,13 +30,18 @@ export default function RiskCalculator() {
       b > 0 && r > 0 && c > 0 && l > 0 &&
       e > 0 && s > 0 && distance > 0;
 
+    const minimumLotLoss = distance * c * 0.01;
+
     return {
       distance,
       budget,
       loss,
       suggestedLot,
+      minimumLotLoss,
       valid,
-      tooRisky: valid && loss > budget
+      tooRisky: valid && loss > budget,
+      minimumLotTooRisky:
+        valid && minimumLotLoss > budget
     };
   }, [balance, riskPct, entry, stop, contract, lot]);
 
@@ -115,6 +120,16 @@ export default function RiskCalculator() {
         </div>
       )}
 
+      {result.valid && result.minimumLotTooRisky && (
+        <div className="notice" style={{ color: "#ef4444", fontWeight: "bold" }}>
+          ⚠ MINIMUM LOT 0.01 IS ALSO TOO RISKY.
+          <br />
+          Minimum lot estimated loss: ${result.minimumLotLoss.toFixed(2)}
+          <br />
+          SKIP TRADE — Do not force a trade.
+        </div>
+      )}
+
       <p className="notice">
         Important: Contract size must match your broker's XAU/USD
         specification. This estimate excludes spread, commission,
@@ -123,17 +138,4 @@ export default function RiskCalculator() {
       </p>
     </div>
   );
-       }
-tooRisky: valid && loss > budget
-minimumLotLoss: distance * c * 0.01,
-minimumLotTooRisky: valid && distance * c * 0.01 > budget
-{result.valid && result.minimumLotTooRisky && (
-  <div style={{ color: "#ef4444", fontWeight: "bold" }}>
-    ⚠ MINIMUM LOT 0.01 IS ALSO TOO RISKY.
-    <br />
-    Minimum lot estimated loss: $
-    {result.minimumLotLoss.toFixed(2)}
-    <br />
-    SKIP TRADE — Do not force a trade.
-  </div>
-)}
+               }
