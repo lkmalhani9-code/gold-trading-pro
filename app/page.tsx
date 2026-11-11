@@ -148,33 +148,46 @@ export default function Home() {
   const [riskPercent, setRiskPercent] = useState("1");
   const [filter, setFilter] = useState("ALL");
 
+  
   useEffect(() => {
     let active = true;
 
     async function refresh() {
-      const results = await Promise.all(
-        COINS.map(async (coin) => {
-          try {
-            return await getSignal(coin);
-          } catch {
-            return null;
-          }
-        })
-      );
+      try {
+        const results = await Promise.all(
+          COINS.map(async (coin) => {
+            try {
+              return await getSignal(coin);
+            } catch {
+              return null;
+            }
+          })
+        );
 
-      if (!active) return;
+        if (!active) return;
 
-      const valid = results.filter(
-        (item): item is Signal => item !== null
-      );
+        const valid = results.filter(
+          (item): item is Signal => item !== null
+        );
 
-      setSignals(valid);
-      setError(valid.length === 0 ? "Market data unavailable. Please try again." : "");
-      setUpdatedAt(new Date().toLocaleTimeString());
-      setLoading(false);
+        setSignals(valid);
+        setError(
+          valid.length === 0
+            ? "Market data unavailable. Please try again."
+            : ""
+        );
+        setUpdatedAt(new Date().toLocaleTimeString());
+      } catch {
+        if (active) {
+          setError("Unable to load market data.");
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
     }
 
     refresh();
+
     const timer = setInterval(refresh, 60000);
 
     return () => {
@@ -182,6 +195,7 @@ export default function Home() {
       clearInterval(timer);
     };
   }, []);
+
 
   const account = Math.max(0, Number(balance) || 0);
   const risk = Math.min(100, Math.max(0, Number(riskPercent) || 0));
