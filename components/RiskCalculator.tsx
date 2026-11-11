@@ -124,3 +124,16 @@ export default function RiskCalculator() {
     </div>
   );
        }
+tooRisky: valid && loss > budget
+minimumLotLoss: distance * c * 0.01,
+minimumLotTooRisky: valid && distance * c * 0.01 > budget
+{result.valid && result.minimumLotTooRisky && (
+  <div style={{ color: "#ef4444", fontWeight: "bold" }}>
+    ⚠ MINIMUM LOT 0.01 IS ALSO TOO RISKY.
+    <br />
+    Minimum lot estimated loss: $
+    {result.minimumLotLoss.toFixed(2)}
+    <br />
+    SKIP TRADE — Do not force a trade.
+  </div>
+)}
