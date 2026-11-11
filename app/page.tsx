@@ -39,12 +39,6 @@ const COINS: Coin[] = [
   { symbol: "LTCUSDT", name: "Litecoin", icon: "Ł" },
 ];
 
-type Candle = {
-  high: number;
-  low: number;
-  close: number;
-};
-
 function calculateEMA(values: number[], period: number) {
   const multiplier = 2 / (period + 1);
   let ema = values[0];
@@ -76,6 +70,12 @@ function calculateRSI(values: number[], period = 14) {
   return 100 - 100 / (1 + rs);
 }
 
+type Candle = {
+  high: number;
+  low: number;
+  close: number;
+};
+
 function calculateATR(candles: Candle[], period = 14) {
   const ranges: number[] = [];
 
@@ -93,9 +93,9 @@ function calculateATR(candles: Candle[], period = 14) {
   }
 
   const recent = ranges.slice(-period);
+
   return recent.reduce((sum, value) => sum + value, 0) / recent.length;
 }
-
 async function getSignal(coin: Coin): Promise<Signal> {
   const response = await fetch(
     `https://api.binance.com/api/v3/klines?symbol=${coin.symbol}&interval=15m&limit=100`,
@@ -140,9 +140,7 @@ async function getSignal(coin: Coin): Promise<Signal> {
   const distance = atr * 1.5;
 
   const stopLoss =
-    direction === "LONG"
-      ? entry - distance
-      : entry + distance;
+    direction === "LONG" ? entry - distance : entry + distance;
 
   const takeProfit =
     direction === "LONG"
@@ -171,7 +169,6 @@ function money(value: number) {
     maximumFractionDigits: 6,
   });
 }
-
 export default function Home() {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -203,23 +200,16 @@ export default function Home() {
         );
 
         setSignals(valid);
-        setError(
-          valid.length === 0
-            ? "Market data unavailable. Please try again."
-            : ""
-        );
+        setError(valid.length === 0 ? "Market data unavailable." : "");
         setUpdatedAt(new Date().toLocaleTimeString());
       } catch {
-        if (active) {
-          setError("Unable to load market data.");
-        }
+        if (active) setError("Unable to load market data.");
       } finally {
         if (active) setLoading(false);
       }
     }
 
     refresh();
-
     const timer = setInterval(refresh, 60000);
 
     return () => {
@@ -232,11 +222,11 @@ export default function Home() {
   const risk = Math.min(100, Math.max(0, Number(riskPercent) || 0));
   const riskAmount = account * risk / 100;
 
-  const longCount = signals.filter((s) => s.direction === "LONG").length;
-  const shortCount = signals.filter((s) => s.direction === "SHORT").length;
-  const waitCount = signals.filter((s) => s.direction === "WAIT").length;
+  const longCount = signals.filter(s => s.direction === "LONG").length;
+  const shortCount = signals.filter(s => s.direction === "SHORT").length;
+  const waitCount = signals.filter(s => s.direction === "WAIT").length;
 
-  const visibleSignals = signals.filter((s) =>
+  const visibleSignals = signals.filter(s =>
     filter === "ALL" ? true : s.direction === filter
   );
 
@@ -249,9 +239,8 @@ export default function Home() {
           margin: 0;
           background: #080d18;
           color: #f1f5f9;
-          font-family: Arial, Helvetica, sans-serif;
+          font-family: Arial, sans-serif;
         }
-        button, input { font: inherit; }
         .site { min-height: 100vh; background: #080d18; }
         .container { width: min(1160px, 92%); margin: auto; }
         .navbar {
@@ -268,38 +257,36 @@ export default function Home() {
           align-items: center;
           gap: 20px;
         }
-        .brand { font-size: 19px; font-weight: 800; letter-spacing: -.5px; }
+        .brand { font-size: 19px; font-weight: 800; }
         .brand span { color: #38bdf8; }
-        .nav-links { display: flex; gap: 22px; flex-wrap: wrap; }
+        .nav-links { display: flex; gap: 20px; flex-wrap: wrap; }
         .nav-links a {
           color: #a6b4c8;
           text-decoration: none;
           font-size: 13px;
         }
-        .nav-links a:hover { color: #38bdf8; }
         .hero { padding: 65px 0 38px; }
         .eyebrow {
           color: #38bdf8;
           font-size: 12px;
           font-weight: 700;
           letter-spacing: 2px;
-          text-transform: uppercase;
         }
         h1 {
           font-size: clamp(34px, 6vw, 58px);
           line-height: 1.08;
           max-width: 760px;
           margin: 17px 0;
-          letter-spacing: -2px;
         }
+        .blue { color: #38bdf8; }
         .hero p {
           color: #9aaac0;
           line-height: 1.8;
           max-width: 650px;
           font-size: 15px;
         }
-        .hero-actions { display: flex; gap: 12px; margin-top: 25px; flex-wrap: wrap; }
         .btn {
+          display: inline-block;
           padding: 12px 18px;
           border-radius: 9px;
           text-decoration: none;
@@ -307,6 +294,7 @@ export default function Home() {
           font-weight: 700;
           background: #38bdf8;
           color: #07111f;
+          margin: 8px 8px 0 0;
         }
         .btn.secondary {
           background: #172337;
@@ -329,7 +317,7 @@ export default function Home() {
           grid-template-columns: repeat(4, 1fr);
           gap: 13px;
         }
-        .panel, .stat, .signal-card {
+        .panel, .stat, .signal-card, .academy-card {
           background: #101a2b;
           border: 1px solid #1e2c42;
           border-radius: 13px;
@@ -337,7 +325,6 @@ export default function Home() {
         .stat { padding: 19px; }
         .stat-label { color: #91a2ba; font-size: 12px; }
         .stat-value { font-size: 27px; font-weight: 800; margin-top: 10px; }
-        .blue { color: #38bdf8; }
         .green { color: #34d399; }
         .red { color: #fb7185; }
         .yellow { color: #fbbf24; }
@@ -379,7 +366,6 @@ export default function Home() {
           color: #7dd3fc;
           border-radius: 10px;
           margin-right: 10px;
-          font-weight: 800;
         }
         .signal-badge {
           padding: 7px 10px;
@@ -411,7 +397,6 @@ export default function Home() {
         .indicator-line {
           display: flex;
           justify-content: space-between;
-          gap: 10px;
           border-top: 1px solid #213047;
           margin-top: 14px;
           padding-top: 12px;
@@ -439,7 +424,6 @@ export default function Home() {
           background: #0b1423;
           color: white;
           border-radius: 8px;
-          outline: none;
         }
         .risk-result {
           background: #0b1423;
@@ -447,18 +431,17 @@ export default function Home() {
           border-radius: 12px;
           padding: 22px;
         }
-        .risk-result strong { display: block; font-size: 30px; margin: 10px 0; }
+        .risk-result strong {
+          display: block;
+          font-size: 30px;
+          margin: 10px 0;
+        }
         .academy-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 14px;
         }
-        .academy-card {
-          background: #101a2b;
-          border: 1px solid #1e2c42;
-          border-radius: 12px;
-          padding: 20px;
-        }
+        .academy-card { padding: 20px; }
         .academy-card h3 { font-size: 15px; }
         .academy-card p {
           color: #94a5bc;
@@ -474,13 +457,6 @@ export default function Home() {
           line-height: 1.7;
           font-size: 12px;
         }
-        footer {
-          border-top: 1px solid #1e2c42;
-          padding: 25px 0;
-          color: #8293aa;
-          font-size: 12px;
-          margin-top: 35px;
-        }
         .loading {
           padding: 35px;
           text-align: center;
@@ -488,8 +464,19 @@ export default function Home() {
           background: #101a2b;
           border-radius: 12px;
         }
+        footer {
+          border-top: 1px solid #1e2c42;
+          padding: 25px 0;
+          color: #8293aa;
+          font-size: 12px;
+          margin-top: 35px;
+        }
         @media (max-width: 700px) {
-          .nav-inner { align-items: flex-start; flex-direction: column; padding: 15px 0; }
+          .nav-inner {
+            align-items: flex-start;
+            flex-direction: column;
+            padding: 15px 0;
+          }
           .nav-links { gap: 14px; }
           .hero { padding-top: 42px; }
           .stats { grid-template-columns: repeat(2, 1fr); }
@@ -519,23 +506,20 @@ export default function Home() {
           and learn why risk management matters. Build knowledge before
           making decisions.
         </p>
-        <div className="hero-actions">
-          <a className="btn" href="#signals">Explore Market Signals</a>
-          <a className="btn secondary" href="#academy">Learn Trading Basics</a>
-        </div>
+        <a className="btn" href="#signals">Explore Market Signals</a>
+        <a className="btn secondary" href="#academy">Learn Trading Basics</a>
       </section>
 
       <section className="section container" id="markets">
         <div className="section-heading">
           <div>
             <h2>Market Overview</h2>
-            <div className="muted">10 selected cryptocurrency markets · 15-minute timeframe</div>
+            <div className="muted">10 selected markets · 15-minute timeframe</div>
           </div>
           <div className="muted">
             {updatedAt ? `Updated ${updatedAt}` : "Connecting to market data..."}
           </div>
         </div>
-
         <div className="stats">
           <div className="stat">
             <div className="stat-label">Markets tracked</div>
@@ -576,7 +560,6 @@ export default function Home() {
         </div>
 
         {loading && <div className="loading">Loading market data...</div>}
-
         {error && <div className="notice">{error}</div>}
 
         {!loading && visibleSignals.length === 0 && !error && (
@@ -650,7 +633,6 @@ export default function Home() {
             <div className="muted">Plan a maximum risk amount before considering a trade.</div>
           </div>
         </div>
-
         <div className="panel calculator">
           <div>
             <div className="field">
@@ -669,4 +651,78 @@ export default function Home() {
                 min="0"
                 max="100"
                 step="0.1"
-                valu
+                value={riskPercent}
+                onChange={(e) => setRiskPercent(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="risk-result">
+            <div className="muted">Planned maximum risk amount</div>
+            <strong className="blue">{money(riskAmount)}</strong>
+            <div className="muted">
+              Based on {risk}% of a {money(account)} account.
+            </div>
+            <p className="muted">
+              This is a planning estimate, not a recommended trade size.
+              Actual losses may differ due to fees, slippage and execution.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="section container" id="academy">
+        <div className="section-heading">
+          <div>
+            <h2>Trading Academy</h2>
+            <div className="muted">Understand the tools before using a signal.</div>
+          </div>
+        </div>
+        <div className="academy-grid">
+          <div className="academy-card">
+            <div className="blue">01 · TREND</div>
+            <h3>EMA 20 & EMA 50</h3>
+            <p>
+              Moving averages help study market direction. A crossover alone
+              does not guarantee a successful trade.
+            </p>
+          </div>
+          <div className="academy-card">
+            <div className="blue">02 · MOMENTUM</div>
+            <h3>RSI 14</h3>
+            <p>
+              RSI measures momentum. It can help identify strong or weak
+              conditions, but should not be used alone.
+            </p>
+          </div>
+          <div className="academy-card">
+            <div className="blue">03 · RISK</div>
+            <h3>Risk Management</h3>
+            <p>
+              Decide your maximum acceptable loss in advance. Avoid risking
+              money you cannot afford to lose.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="container section">
+        <div className="notice">
+          <strong>Important Risk Disclaimer</strong>
+          <br />
+          Crypto Signals Pro is an educational market-analysis tool.
+          Signals are generated by simple technical rules and have not
+          been independently verified for profitability or accuracy.
+          They are not financial advice. No profit or accuracy is guaranteed.
+          Always do your own research and understand the risk before trading.
+        </div>
+      </section>
+
+      <footer>
+        <div className="container">
+          © 2026 Crypto Signals Pro · Learn first. Manage risk. Stay disciplined.
+        </div>
+      </footer>
+    </main>
+  );
+            }
+        
