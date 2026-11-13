@@ -186,7 +186,21 @@ export default function Home() {
         borderRadius: "12px"
       }}>
         <h2>{symbol}</h2>
-
+<div style={{
+  marginTop: "15px",
+  background: "#0f172a",
+  borderRadius: "10px",
+  overflow: "hidden"
+}}>
+  <iframe
+    key={symbol}
+    src={`https://s.tradingview.com/widgetembed/?symbol=${symbol === "XAU/USD" ? "OANDA:XAUUSD" : symbol === "EUR/USD" ? "FX:EURUSD" : symbol === "GBP/USD" ? "FX:GBPUSD" : symbol === "USD/JPY" ? "FX:USDJPY" : symbol === "BTC/USD" ? "BINANCE:BTCUSDT" : "BINANCE:ETHUSDT"}&interval=15&theme=dark&style=1&locale=en`}
+    width="100%"
+    height="400"
+    frameBorder="0"
+    allowFullScreen
+  />
+</div>
         {loading && <p>Loading market data...</p>}
 
         {error && (
